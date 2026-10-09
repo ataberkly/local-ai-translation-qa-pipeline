@@ -1,0 +1,120 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "AI Çeviri & QA Asistanı",
+        "formDescription": "Çevrilecek metni girin.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Kaynak Metin",
+              "fieldType": "textarea",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        0
+      ],
+      "id": "342d6380-10f8-4c55-99ae-4f2590bcff81",
+      "name": "On form submission",
+      "webhookId": "dd2e5600-a6c8-4965-bb01-3f8d85017e46"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "qwen2.5:7b",
+          "mode": "list",
+          "cachedResultName": "qwen2.5:7b"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=CRITICAL INSTRUCTIONS:\n- Translate EVERYTHING into fluent, natural Turkish.\n- DO NOT keep English words inside Turkish sentences.\n- Output ONLY two sections: Translation and Notes.\n\nYou are a professional English-to-Turkish translator.\n\nFormat:\n**Full Turkish Translation**\n[Your translation here]\n\n**QA & Translation Notes**\n[Your notes here]\n\nText to translate:\n{{ $json['Kaynak Metin'] }}"
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.2,
+          "top_p": 0.1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.ollama",
+      "typeVersion": 1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "5a61add7-3e8d-4b93-8f78-2ed012da0d2f",
+      "name": "Message a model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "BFrFlAwRbs6kH4pg",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "Çeviri ve Kalite Kontrol Raporu",
+        "completionMessage": "=<div style=\"font-family: sans-serif; padding: 10px; line-height: 1.6;\">\n  <div style=\"white-space: pre-wrap; background: #f9f9f9; padding: 15px; border-radius: 8px; border: 1px solid #e0e0e0;\">\n    {{ $json.content }}\n  </div>\n</div>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        592,
+        0
+      ],
+      "id": "30c98b3e-f64f-4ad1-b178-52eec1fba805",
+      "name": "Form",
+      "webhookId": "a99391be-c314-40df-ba2b-4775c5658433"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "3f0d6d6b-c4dc-4e1e-b712-2ad91d16a369",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8776ef44ee527d60f404f30383069b143b39c8cda91055d33d355f2a2fc01f2b"
+  },
+  "nodeGroups": [],
+  "id": "Iiodhpww1Z3FBecT",
+  "tags": []
+}
